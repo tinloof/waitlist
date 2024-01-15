@@ -1,28 +1,51 @@
-import { GeistSans } from 'geist/font/sans'
-import './globals.css'
+import { Inter as FontSans } from "next/font/google";
+import "./globals.css";
+import AuthButton from "@/components/AuthButton";
+import Navbar from "@/components/Navbar";
+
+export const fontSans = FontSans({
+  subsets: ["latin"],
+  variable: "--font-sans",
+});
 
 const defaultUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
-  : 'http://localhost:3000'
+  : "http://localhost:3000";
 
 export const metadata = {
   metadataBase: new URL(defaultUrl),
-  title: 'Next.js and Supabase Starter Kit',
-  description: 'The fastest way to build apps with Next.js and Supabase',
-}
+  title: "Next.js and Supabase Starter Kit",
+  description: "The fastest way to build apps with Next.js and Supabase",
+};
 
 export default function RootLayout({
   children,
 }: {
-  children: React.ReactNode
+  children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={GeistSans.className}>
+    <html lang="en" className={fontSans.variable}>
       <body className="bg-background text-foreground">
-        <main className="min-h-screen flex flex-col items-center">
-          {children}
-        </main>
+        <div className="min-h-screen flex-1 w-full flex flex-col gap-20 items-center">
+          <Navbar authButton={<AuthButton />} />
+
+          <main className="flex-1 flex gap-5 items-center">{children}</main>
+
+          <footer className="w-full border-t border-t-foreground/10 p-8 flex justify-center text-center text-xs">
+            <p>
+              Created by{" "}
+              <a
+                href="https://tinloof.com"
+                target="_blank"
+                className="font-bold hover:underline"
+                rel="noreferrer"
+              >
+                Tinloof
+              </a>
+            </p>
+          </footer>
+        </div>
       </body>
     </html>
-  )
+  );
 }

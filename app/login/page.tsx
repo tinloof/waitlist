@@ -1,41 +1,44 @@
-import Link from 'next/link'
-import { headers, cookies } from 'next/headers'
-import { createClient } from '@/utils/supabase/server'
-import { redirect } from 'next/navigation'
+import Link from "next/link";
+import { headers, cookies } from "next/headers";
+import { createClient } from "@/utils/supabase/server";
+import { redirect } from "next/navigation";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import Image from "next/image";
 
 export default function Login({
   searchParams,
 }: {
-  searchParams: { message: string }
+  searchParams: { message: string };
 }) {
   const signIn = async (formData: FormData) => {
-    'use server'
+    "use server";
 
-    const email = formData.get('email') as string
-    const password = formData.get('password') as string
-    const cookieStore = cookies()
-    const supabase = createClient(cookieStore)
+    const email = formData.get("email") as string;
+    const password = formData.get("password") as string;
+    const cookieStore = cookies();
+    const supabase = createClient(cookieStore);
 
     const { error } = await supabase.auth.signInWithPassword({
       email,
       password,
-    })
+    });
 
     if (error) {
-      return redirect('/login?message=Could not authenticate user')
+      return redirect("/login?message=Could not authenticate user");
     }
 
-    return redirect('/')
-  }
+    return redirect("/");
+  };
 
   const signUp = async (formData: FormData) => {
-    'use server'
+    "use server";
 
-    const origin = headers().get('origin')
-    const email = formData.get('email') as string
-    const password = formData.get('password') as string
-    const cookieStore = cookies()
-    const supabase = createClient(cookieStore)
+    const origin = headers().get("origin");
+    const email = formData.get("email") as string;
+    const password = formData.get("password") as string;
+    const cookieStore = cookies();
+    const supabase = createClient(cookieStore);
 
     const { error } = await supabase.auth.signUp({
       email,
@@ -43,17 +46,17 @@ export default function Login({
       options: {
         emailRedirectTo: `${origin}/auth/callback`,
       },
-    })
+    });
 
     if (error) {
-      return redirect('/login?message=Could not authenticate user')
+      return redirect("/login?message=Could not authenticate user");
     }
 
-    return redirect('/login?message=Check email to continue sign in process')
-  }
+    return redirect("/login?message=Check email to continue sign in process");
+  };
 
   return (
-    <div className="flex-1 flex flex-col w-full px-8 sm:max-w-md justify-center gap-2">
+    <div className="flex-1 flex flex-col max-w-full w-72 sm:max-w-md justify-center gap-2">
       <Link
         href="/"
         className="absolute left-8 top-8 py-2 px-4 rounded-md no-underline text-foreground bg-btn-background hover:bg-btn-background-hover flex items-center group text-sm"
@@ -71,42 +74,29 @@ export default function Login({
           className="mr-2 h-4 w-4 transition-transform group-hover:-translate-x-1"
         >
           <polyline points="15 18 9 12 15 6" />
-        </svg>{' '}
+        </svg>{" "}
         Back
       </Link>
 
       <form
-        className="animate-in flex-1 flex flex-col w-full justify-center gap-2 text-foreground"
+        className="animate-in flex-1 flex flex-col w-full justify-center gap-5 text-foreground"
         action={signIn}
       >
-        <label className="text-md" htmlFor="email">
-          Email
-        </label>
-        <input
-          className="rounded-md px-4 py-2 bg-inherit border mb-6"
-          name="email"
-          placeholder="you@example.com"
-          required
+        <Image
+          src="/images/icon.png"
+          alt="tinloof"
+          className="self-center"
+          width={50}
+          height={50}
         />
-        <label className="text-md" htmlFor="password">
-          Password
-        </label>
-        <input
-          className="rounded-md px-4 py-2 bg-inherit border mb-6"
+        <Input name="email" placeholder="you@example.com" required />
+        <Input
           type="password"
           name="password"
           placeholder="••••••••"
           required
         />
-        <button className="bg-green-700 rounded-md px-4 py-2 text-foreground mb-2">
-          Sign In
-        </button>
-        <button
-          formAction={signUp}
-          className="border border-foreground/20 rounded-md px-4 py-2 text-foreground mb-2"
-        >
-          Sign Up
-        </button>
+        <Button>Sign In</Button>
         {searchParams?.message && (
           <p className="mt-4 p-4 bg-foreground/10 text-foreground text-center">
             {searchParams.message}
@@ -114,5 +104,5 @@ export default function Login({
         )}
       </form>
     </div>
-  )
+  );
 }
