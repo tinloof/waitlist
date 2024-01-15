@@ -1,25 +1,33 @@
-import { NextResponse, type NextRequest } from 'next/server'
-import { createClient } from '@/utils/supabase/middleware'
+import { NextResponse, type NextRequest } from "next/server";
+import { createClient } from "@/utils/supabase/middleware";
 
-export async function middleware(request: NextRequest) {
-  try {
-    // This `try/catch` block is only here for the interactive tutorial.
-    // Feel free to remove once you have Supabase connected.
-    const { supabase, response } = createClient(request)
+export async function middleware(req: NextRequest) {
+  const { supabase, response } = createClient(req);
 
-    // Refresh session if expired - required for Server Components
-    // https://supabase.com/docs/guides/auth/auth-helpers/nextjs#managing-session-with-middleware
-    await supabase.auth.getSession()
+  const { data } = await supabase.auth.getSession();
 
-    return response
-  } catch (e) {
-    // If you are here, a Supabase client could not be created!
-    // This is likely because you have not set up environment variables.
-    // Check out http://localhost:3000 for Next Steps.
-    return NextResponse.next({
-      request: {
-        headers: request.headers,
-      },
-    })
+  //If the user is accessing a page other than dashboard, do nothing
+  if (req.nextUrl.pathname !== "/dashboard") return response;
+
+  const userLoggedIn = !!data?.session?.user;
+
+  // If user is not logged in, redirect to login page
+  if (!userLoggedIn) {
+    return NextResponse.redirect(req.nextUrl.origin + "/login");
   }
+
+  // If user is logged in.
+
+  //Fetch the user's waitlist entry
+  const { data: waitlistEntry } = await supabase
+    .from("waitlist")
+    .select("approved")
+    .eq("user_id", data.session?.user.id)
+    .single();
+
+  // The user is approved, allow access to dashboard
+  if (waitlistEntry?.approved) return response;
+
+  // The user is not approved, redirect to waitlist page
+  return NextResponse.redirect(req.nextUrl.origin + "/waitlist");
 }
