@@ -3,7 +3,7 @@ import "./globals.css";
 import AuthButton from "@/components/AuthButton";
 import Navbar from "@/components/Navbar";
 
-export const fontSans = FontSans({
+const fontSans = FontSans({
   subsets: ["latin"],
   variable: "--font-sans",
 });
