@@ -97,6 +97,9 @@ export default function Login({
           required
         />
         <Button>Sign In</Button>
+        <Button formAction={signUp} variant={"secondary"}>
+          Sign Up
+        </Button>
         {searchParams?.message && (
           <p className="mt-4 p-4 bg-foreground/10 text-foreground text-center">
             {searchParams.message}
